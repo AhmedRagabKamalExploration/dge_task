@@ -1,8 +1,14 @@
 import { fetchNews } from "../features/news/services/news.service";
 import { NewsList } from "../features/news/components/news-list/news-list";
 import { Suspense } from "react";
+import type { Metadata } from "next";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "Latest News - Newsfeed App",
+  description: "Browse the latest news articles and headlines from around the world. Search and filter articles by title.",
+};
 
 export default async function NewsPage({
   searchParams,
