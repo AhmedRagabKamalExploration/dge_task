@@ -1,12 +1,35 @@
 import { withQuery } from "../../../services/domain";
 
 export async function GET(request: Request) {
+  const apiKey = request.headers.get("x-api-key");
+  const expectedApiKey = process.env.API_KEY;
+
+  if (!expectedApiKey) {
+    console.error("API_KEY environment variable is not set");
+    return Response.json(
+      { error: "Server configuration error" },
+      { status: 500 }
+    );
+  }
+
+  if (!apiKey || apiKey !== expectedApiKey) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
+
+  const newsApiKey = process.env.NEWS_API_KEY;
+  if (!newsApiKey) {
+    return Response.json(
+      { error: "Server configuration error" },
+      { status: 500 }
+    );
+  }
 
   const baseUrl = "https://newsapi.org/v2/top-headlines";
   const defaultParams = {
     country: "us",
-    apiKey: "7036b09db7e64f24891a22c6e5ab54b9",
+    apiKey: newsApiKey,
   };
 
   const queryParams: Record<string, string> = {};
