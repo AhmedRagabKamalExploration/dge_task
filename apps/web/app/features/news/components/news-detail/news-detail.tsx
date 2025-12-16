@@ -29,11 +29,6 @@ export function NewsDetail({ article }: NewsDetailProps) {
             </h1>
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm pb-6 border-b border-border">
-              {article.source.name && (
-                <span className="font-semibold text-foreground">
-                  {article.source.name}
-                </span>
-              )}
               {article.author && (
                 <span className="text-muted-foreground">
                   By{" "}

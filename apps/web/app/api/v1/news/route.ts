@@ -1,5 +1,20 @@
 import { withQuery } from "../../../services/domain";
 
+type NewsApiArticle = {
+  title?: string;
+  description?: string | null;
+  urlToImage?: string | null;
+  author?: string | null;
+  publishedAt?: string;
+  content?: string | null;
+  [key: string]: unknown;
+};
+
+type NewsApiResponse = {
+  articles: NewsApiArticle[];
+  [key: string]: unknown;
+};
+
 export async function GET(request: Request) {
   const apiKey = request.headers.get("x-api-key");
   const expectedApiKey = process.env.API_KEY;
@@ -45,7 +60,37 @@ export async function GET(request: Request) {
 
   const newsApiUrl = withQuery(baseUrl, params);
 
-  const response = await fetch(newsApiUrl);
-  const data = await response.json();
-  return Response.json(data);
+  try {
+    const response = await fetch(newsApiUrl);
+
+    if (!response.ok) {
+      return Response.json(
+        { error: "Failed to fetch news from external API" },
+        { status: response.status }
+      );
+    }
+
+    const data = (await response.json()) as NewsApiResponse;
+
+    if (!data.articles || !Array.isArray(data.articles)) {
+      return Response.json(
+        { error: "Invalid response format from news API" },
+        { status: 500 }
+      );
+    }
+
+    const filteredArticles = data.articles.map((article: NewsApiArticle) => ({
+      title: article.title ?? "",
+      description: article.description ?? null,
+      urlToImage: article.urlToImage ?? null,
+      author: article.author ?? null,
+      publishedAt: article.publishedAt ?? "",
+      content: article.content ?? null,
+    }));
+
+    return Response.json({ articles: filteredArticles });
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    return Response.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
