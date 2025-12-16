@@ -26,6 +26,8 @@ import { Article } from "../../types/news.type";
 import { NewsTitleFilter } from "../news-title-filter/news-title-filter";
 import { generateArticleSlug } from "../../utils/article.utils";
 
+type ArticleWithSlug = Article & { slug: string };
+
 export function NewsTable({ news }: { news: Article[] }) {
   const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -36,8 +38,17 @@ export function NewsTable({ news }: { news: Article[] }) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const newsWithSlugs = React.useMemo<ArticleWithSlug[]>(
+    () =>
+      news.map((article) => ({
+        ...article,
+        slug: generateArticleSlug(article.title, article.publishedAt),
+      })),
+    [news]
+  );
+
   const table = useReactTable({
-    data: news,
+    data: newsWithSlugs,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -85,14 +96,13 @@ export function NewsTable({ news }: { news: Article[] }) {
               <TableBody>
                 {table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => {
-                    const article = row.original as Article;
-                    const slug = generateArticleSlug(article.title);
+                    const article = row.original as ArticleWithSlug;
                     return (
                       <TableRow
                         key={row.id}
                         data-state={row.getIsSelected() && "selected"}
                         className="cursor-pointer hover:bg-muted/50 transition-colors border-b"
-                        onClick={() => router.push(`/news/${slug}`)}
+                        onClick={() => router.push(`/news/${article.slug}`)}
                       >
                         {row.getVisibleCells().map((cell) => (
                           <TableCell key={cell.id} className="py-4">

@@ -3,9 +3,13 @@ import { Article } from "../types/news.type";
 import { findArticleBySlug } from "../utils/article.utils";
 import { cache } from "react";
 
+const getCachedNews = cache(async () => {
+  return fetchNews();
+});
+
 const getCachedArticleBySlug = cache(async (slug: string) => {
   try {
-    const articles = await fetchNews();
+    const articles = await getCachedNews();
     const article = findArticleBySlug(articles, slug);
     return article || null;
   } catch (error) {
