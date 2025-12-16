@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { fetchArticleBySlug } from "../../features/news/services/news-detail.service";
 import { NewsDetail } from "../../features/news/components/news-detail/news-detail";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function NewsDetailPage({
   params,

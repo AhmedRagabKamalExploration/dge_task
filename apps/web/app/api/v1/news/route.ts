@@ -61,7 +61,9 @@ export async function GET(request: Request) {
   const newsApiUrl = withQuery(baseUrl, params);
 
   try {
-    const response = await fetch(newsApiUrl);
+    const response = await fetch(newsApiUrl, {
+      next: { revalidate: 60 },
+    });
 
     if (!response.ok) {
       return Response.json(
@@ -88,7 +90,14 @@ export async function GET(request: Request) {
       content: article.content ?? null,
     }));
 
-    return Response.json({ articles: filteredArticles });
+    return Response.json(
+      { articles: filteredArticles },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching news:", error);
     return Response.json({ error: "Internal server error" }, { status: 500 });

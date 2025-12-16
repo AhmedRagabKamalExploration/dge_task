@@ -1,13 +1,9 @@
 import { fetchNews } from "./news.service";
 import { Article } from "../types/news.type";
 import { findArticleBySlug } from "../utils/article.utils";
+import { cache } from "react";
 
-/**
- * Fetch a single article by slug
- * Since News API doesn't have a single article endpoint,
- * we fetch all articles and find the one matching the slug
- */
-export async function fetchArticleBySlug(slug: string): Promise<Article | null> {
+const getCachedArticleBySlug = cache(async (slug: string) => {
   try {
     const articles = await fetchNews();
     const article = findArticleBySlug(articles, slug);
@@ -16,5 +12,10 @@ export async function fetchArticleBySlug(slug: string): Promise<Article | null> 
     console.error("Error fetching article:", error);
     return null;
   }
-}
+});
 
+export async function fetchArticleBySlug(
+  slug: string
+): Promise<Article | null> {
+  return getCachedArticleBySlug(slug);
+}
