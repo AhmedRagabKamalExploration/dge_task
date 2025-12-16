@@ -14,7 +14,12 @@ export async function GET(request: Request) {
   // Convert searchParams to a plain object
   const queryParams: Record<string, string> = {};
   searchParams.forEach((value, key) => {
-    queryParams[key] = value;
+    // Map 'title' parameter to 'q' (query) parameter for News API
+    if (key === "title") {
+      queryParams["q"] = value;
+    } else {
+      queryParams[key] = value;
+    }
   });
 
   // Merge default params with query params (query params take precedence)

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/table";
 import { columns } from "../news-list-columns/news-list-coumns";
 import { Article } from "../../types/news.type";
+import { NewsTitleFilter } from "../news-title-filter/news-title-filter";
 
 export function NewsTable({ news }: { news: Article[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -31,8 +32,6 @@ export function NewsTable({ news }: { news: Article[] }) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
-  console.log({ news });
 
   const table = useReactTable({
     data: news,
@@ -55,6 +54,7 @@ export function NewsTable({ news }: { news: Article[] }) {
 
   return (
     <div className="w-full">
+      <NewsTitleFilter />
       <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>

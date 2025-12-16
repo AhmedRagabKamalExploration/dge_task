@@ -1,10 +1,10 @@
-import { NewsRespose } from "../../types/news.type";
+import { Article } from "../../types/news.type";
 import { NewsTable } from "../new-table/new-table";
 
 export async function NewsList({
   newsPromise,
 }: {
-  newsPromise: Promise<NewsRespose>;
+  newsPromise: Promise<Article[]>;
 }) {
   const news = await newsPromise;
   return <NewsTable news={news} />;

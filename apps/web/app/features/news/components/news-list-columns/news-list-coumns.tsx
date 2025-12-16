@@ -1,4 +1,3 @@
-import { Button } from "@repo/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { Article } from "../../types/news.type";
@@ -23,13 +22,6 @@ export const columns: ColumnDef<Article>[] = [
           height={100}
         />
       );
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: () => {
-      return <Button appName="news">View</Button>;
     },
   },
 ];
