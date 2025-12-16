@@ -7,7 +7,9 @@ export const columns: ColumnDef<Article>[] = [
     accessorKey: "title",
     header: "Title",
     cell: ({ row }) => (
-      <div className="capitalize font-medium">{row.getValue("title")}</div>
+      <div className="font-medium text-base leading-snug pr-4">
+        {row.getValue("title")}
+      </div>
     ),
   },
 
@@ -17,13 +19,15 @@ export const columns: ColumnDef<Article>[] = [
     cell: ({ row }) => {
       const article = row.original;
       return (
-        <Image
-          src={article.urlToImage || "/placeholder-image.jpg"}
-          alt={article.title}
-          width={100}
-          height={100}
-          className="object-cover rounded"
-        />
+        <div className="relative w-[120px] h-[80px] rounded-md overflow-hidden bg-muted shrink-0">
+          <Image
+            src={article.urlToImage || "/placeholder-image.jpg"}
+            alt={article.title}
+            fill
+            className="object-cover"
+            sizes="120px"
+          />
+        </div>
       );
     },
   },

@@ -56,69 +56,83 @@ export function NewsTable({ news }: { news: Article[] }) {
   });
 
   return (
-    <div className="w-full">
-      <NewsTitleFilter />
-      <div className="overflow-hidden rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => {
-                const article = row.original as Article;
-                const slug = generateArticleSlug(article.title);
-                return (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => router.push(`/news/${slug}`)}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                );
-              })
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+    <div className="w-full h-full flex flex-col">
+      <div className="shrink-0 mb-6">
+        <NewsTitleFilter />
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="text-muted-foreground flex-1 text-sm">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+      <div className="flex-1 min-h-0 flex flex-col">
+        <div className="rounded-lg border bg-card shadow-sm flex-1 min-h-0 flex flex-col overflow-hidden">
+          <div className="overflow-y-auto flex-1">
+            <Table>
+              <TableHeader className="sticky top-0 bg-card z-10">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id} className="font-semibold">
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => {
+                    const article = row.original as Article;
+                    const slug = generateArticleSlug(article.title);
+                    return (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && "selected"}
+                        className="cursor-pointer hover:bg-muted/50 transition-colors border-b"
+                        onClick={() => router.push(`/news/${slug}`)}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id} className="py-4">
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-32 text-center text-muted-foreground"
+                    >
+                      No articles found. Try adjusting your search.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
+        {table.getFilteredRowModel().rows.length > 0 && (
+          <div className="flex items-center justify-between text-sm text-muted-foreground px-1 mt-2 shrink-0">
+            <div>
+              Showing {table.getFilteredRowModel().rows.length} article
+              {table.getFilteredRowModel().rows.length !== 1 ? "s" : ""}
+            </div>
+            {table.getFilteredSelectedRowModel().rows.length > 0 && (
+              <div>
+                {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                {table.getFilteredRowModel().rows.length} selected
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

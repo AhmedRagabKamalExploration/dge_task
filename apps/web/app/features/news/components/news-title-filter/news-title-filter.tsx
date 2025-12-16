@@ -72,12 +72,17 @@ export function NewsTitleFilter() {
   }, [titleValue, router, pathname]);
 
   return (
-    <div className="mb-4">
+    <div className="mb-6">
+      <label htmlFor="news-search" className="sr-only">
+        Search news by title
+      </label>
       <Input
+        id="news-search"
         type="text"
-        placeholder="Search by title..."
+        placeholder="Search articles by title..."
         value={titleValue}
         onChange={(e) => setTitleValue(e.target.value)}
+        className="max-w-md"
       />
     </div>
   );
