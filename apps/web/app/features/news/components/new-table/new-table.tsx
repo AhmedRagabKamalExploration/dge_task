@@ -1,9 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import {
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -11,44 +9,22 @@ import {
   useReactTable,
   type ColumnFiltersState,
   type SortingState,
-  type VisibilityState,
 } from "@tanstack/react-table";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { columns } from "../news-list-columns/news-list-coumns";
 import { Article } from "../../types/news.type";
 import { NewsTitleFilter } from "../news-title-filter/news-title-filter";
-import { generateArticleSlug } from "../../utils/article.utils";
-
-type ArticleWithSlug = Article & { slug: string };
+import { NewsCard } from "../news-card/news-card";
+import { columns } from "../news-list-columns/news-list-coumns";
 
 export function NewsTable({ news }: { news: Article[] }) {
-  const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
 
-  const newsWithSlugs = React.useMemo<ArticleWithSlug[]>(
-    () =>
-      news.map((article) => ({
-        ...article,
-        slug: generateArticleSlug(article.title, article.publishedAt),
-      })),
-    [news]
-  );
+  const data = React.useMemo(() => news, [news]);
 
   const table = useReactTable({
-    data: newsWithSlugs,
+    data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -56,94 +32,88 @@ export function NewsTable({ news }: { news: Article[] }) {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
-      columnVisibility,
-      rowSelection,
+    },
+    initialState: {
+      pagination: {
+        pageSize: 12,
+      },
     },
   });
 
+  const { rows } = table.getRowModel();
+  const filterValue = table
+    .getState()
+    .columnFilters.find((f) => f.id === "title")?.value as string | undefined;
+
   return (
-    <div className="w-full h-full flex flex-col">
-      <div className="shrink-0 mb-6">
-        <NewsTitleFilter />
+    <div className="w-full flex flex-col items-center space-y-8 pb-10">
+      <div className="w-full max-w-6xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="text-center md:text-left">
+          <h2 className="text-3xl font-bold tracking-tight">Top Headlines</h2>
+          <p className="text-muted-foreground mt-1">
+            Stay updated with the latest news from around the US.
+          </p>
+        </div>
+        <div className="w-full md:w-72">
+          <NewsTitleFilter />
+        </div>
       </div>
-      <div className="flex-1 min-h-0 flex flex-col">
-        <div className="rounded-lg border bg-card shadow-sm flex-1 min-h-0 flex flex-col overflow-hidden">
-          <div className="overflow-y-auto flex-1">
-            <Table>
-              <TableHeader className="sticky top-0 bg-card z-10">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id} className="font-semibold">
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => {
-                    const article = row.original as ArticleWithSlug;
-                    return (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && "selected"}
-                        className="cursor-pointer hover:bg-muted/50 transition-colors border-b"
-                        onClick={() => router.push(`/news/${article.slug}`)}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id} className="py-4">
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    );
-                  })
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-32 text-center text-muted-foreground"
-                    >
-                      No articles found. Try adjusting your search.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+
+      {rows.length > 0 ? (
+        <div className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {rows.map((row) => (
+            <NewsCard key={row.id} article={row.original} />
+          ))}
+        </div>
+      ) : (
+        <div className="w-full max-w-2xl flex flex-col items-center justify-center py-20 text-center border rounded-2xl border-dashed bg-muted/30">
+          <div className="rounded-full bg-muted p-4 mb-4">
+            <svg
+              className="h-8 w-8 text-muted-foreground"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+              />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold">No articles found</h3>
+          <p className="text-muted-foreground max-w-sm mt-2">
+            {filterValue
+              ? `We couldn't find any articles matching "${filterValue}". Try a different search term.`
+              : "No articles available at the moment."}
+          </p>
+        </div>
+      )}
+
+      {rows.length > 0 && (
+        <div className="w-full max-w-6xl flex items-center justify-center py-4">
+          <div className="flex items-center gap-3">
+            <button
+              className="px-5 py-2.5 text-sm font-medium border rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </button>
+            <button
+              className="px-5 py-2.5 text-sm font-medium border rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </button>
           </div>
         </div>
-        {table.getFilteredRowModel().rows.length > 0 && (
-          <div className="flex items-center justify-between text-sm text-muted-foreground px-1 mt-2 shrink-0">
-            <div>
-              Showing {table.getFilteredRowModel().rows.length} article
-              {table.getFilteredRowModel().rows.length !== 1 ? "s" : ""}
-            </div>
-            {table.getFilteredSelectedRowModel().rows.length > 0 && (
-              <div>
-                {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                {table.getFilteredRowModel().rows.length} selected
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }

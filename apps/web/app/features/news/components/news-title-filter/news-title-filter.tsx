@@ -66,8 +66,8 @@ export function NewsTitleFilter() {
   };
 
   return (
-    <div className="mb-6 flex items-center gap-3">
-      <div className="flex-1 max-w-md">
+    <div className="flex items-center gap-3 w-full">
+      <div className="flex-1">
         <label htmlFor="news-search" className="sr-only">
           Search news by title
         </label>
@@ -82,13 +82,13 @@ export function NewsTitleFilter() {
       <button
         onClick={handleRefresh}
         disabled={isRefreshing}
-        className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
         aria-label="Refresh news"
       >
         <RefreshCw
           className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
         />
-        <span>Refresh</span>
+        <span className="hidden sm:inline">Refresh</span>
       </button>
     </div>
   );
