@@ -14,4 +14,6 @@ export type Article = {
   urlToImage: string;
   publishedAt: string;
   source: Source;
+  author?: string | null;
+  content?: string | null;
 };
