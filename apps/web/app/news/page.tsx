@@ -2,7 +2,6 @@ import { fetchNews } from "../features/news/services/news.service";
 import { NewsList } from "../features/news/components/news-list/news-list";
 import { Suspense } from "react";
 
-// Force dynamic rendering to ensure search params are always fresh
 export const dynamic = "force-dynamic";
 
 export default async function NewsPage({

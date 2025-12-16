@@ -13,7 +13,6 @@ export function NewsDetail({ article }: NewsDetailProps) {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <article className="space-y-8">
-          {/* Back Button */}
           <div>
             <Link
               href="/news"
@@ -24,13 +23,11 @@ export function NewsDetail({ article }: NewsDetailProps) {
             </Link>
           </div>
 
-          {/* Article Header */}
           <header className="space-y-6">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight">
               {article.title}
             </h1>
 
-            {/* Meta Information */}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm pb-6 border-b border-border">
               {article.source.name && (
                 <span className="font-semibold text-foreground">
@@ -56,7 +53,6 @@ export function NewsDetail({ article }: NewsDetailProps) {
             </div>
           </header>
 
-          {/* Large Image */}
           {article.urlToImage && (
             <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-muted shadow-md border border-border">
               <Image
@@ -70,7 +66,6 @@ export function NewsDetail({ article }: NewsDetailProps) {
             </div>
           )}
 
-          {/* Description */}
           {article.description && (
             <div className="pt-2">
               <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed font-light">
@@ -79,7 +74,6 @@ export function NewsDetail({ article }: NewsDetailProps) {
             </div>
           )}
 
-          {/* Content */}
           {article.content && (
             <div className="prose prose-lg prose-neutral dark:prose-invert max-w-none">
               <div className="text-base md:text-lg leading-7 text-foreground whitespace-pre-wrap">
@@ -88,7 +82,6 @@ export function NewsDetail({ article }: NewsDetailProps) {
             </div>
           )}
 
-          {/* Read More Link */}
           {article.url && (
             <div className="pt-6 border-t border-border">
               <a
